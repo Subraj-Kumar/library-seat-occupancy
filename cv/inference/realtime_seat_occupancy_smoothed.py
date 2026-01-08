@@ -1,6 +1,7 @@
 import cv2
 import json
 import time
+import requests
 import os
 from ultralytics import YOLO
 
@@ -8,7 +9,7 @@ from ultralytics import YOLO
 VIDEO_PATH = "data/videos/library.mp4"
 SEATS_JSON = "data/seats.json"
 CONF_THRESHOLD = 0.4
-PROCESS_EVERY_N_SECONDS = 0.08  # Check every 1 second
+PROCESS_EVERY_N_SECONDS = 0.2  # Check every 1 second
 SMOOTHING_FRAMES = 3        # Must see change 3 times to switch state
 # ------------------------
 
@@ -111,6 +112,25 @@ while True:
             cv2.rectangle(display_frame, (seat["x1"], seat["y1"]), (seat["x2"], seat["y2"]), color, 2)
             cv2.putText(display_frame, f"ID:{sid}", (seat["x1"], seat["y1"] - 5),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                        
+        # 1. Prepare the Data
+        payload = {
+            "total": len(seats),
+            "occupied": occupied_count,
+            "empty": len(seats) - occupied_count,
+            "seats": {
+                str(seat["seat_id"]): seat_memory[seat["seat_id"]]["state"]
+                for seat in seats
+            }
+        }
+
+        # 2. Push to API
+        try:
+            # timeout=0.1 ensures the CV doesn't wait for the backend if it's slow
+            requests.post("http://127.0.0.1:8000/update", json=payload, timeout=0.1)
+        except Exception as e:
+            # We print a warning but the CV logic keeps running!
+            print(f"⚠️ API Push Failed: {e}")
 
         # Dashboard Overlay
         total = len(seats)
