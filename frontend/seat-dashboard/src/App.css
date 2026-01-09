@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+}
+
+.container {
+  text-align: center;
+  padding: 50px;
+}
+
+.card {
+  background: white;
+  display: inline-block;
+  padding: 30px 50px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.15);
+}
+
+.occupied {
+  color: #e53935;
+}
+
+.free {
+  color: #43a047;
+}
+
+.time {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.error {
+  color: red;
+}
