@@ -10,7 +10,7 @@ function App() {
 
     const fetchInitialData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/status");
+        const response = await fetch("https://library-seat-backend.onrender.com");
         const result = await response.json();
         if (result.last_updated) setData(result);
       } catch (err) {

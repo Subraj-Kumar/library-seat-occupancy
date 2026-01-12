@@ -127,7 +127,7 @@ while True:
         # 2. Push to API
         try:
             # timeout=0.1 ensures the CV doesn't wait for the backend if it's slow
-            requests.post("http://127.0.0.1:8000/update", json=payload, timeout=0.1)
+            requests.post("https://library-seat-backend.onrender.com", json=payload, timeout=0.1)
         except Exception as e:
             # We print a warning but the CV logic keeps running!
             print(f"⚠️ API Push Failed: {e}")
