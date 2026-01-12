@@ -9,8 +9,10 @@ from ultralytics import YOLO
 VIDEO_PATH = "data/videos/library.mp4"
 SEATS_JSON = "data/seats.json"
 CONF_THRESHOLD = 0.4
-PROCESS_EVERY_N_SECONDS = 0.2  # Check every 1 second
-SMOOTHING_FRAMES = 3        # Must see change 3 times to switch state
+PROCESS_EVERY_N_SECONDS = 0.5  # Slightly slower for stable cloud syncing
+SMOOTHING_FRAMES = 5           # Increased for better stability
+# CHANGE THIS TO YOUR ACTUAL RENDER URL
+BACKEND_URL = "https://library-seat-backend.onrender.com/update" 
 # ------------------------
 
 # 1. Load seats
@@ -22,7 +24,6 @@ with open(SEATS_JSON, "r") as f:
     seats = json.load(f)
 
 # 2. Initialize seat memory for smoothing
-# state: CURRENT status, counter: how many times we've seen a DIFFERENT status
 seat_memory = {
     seat["seat_id"]: {"state": "EMPTY", "counter": 0}
     for seat in seats
@@ -48,7 +49,8 @@ cv2.resizeWindow("Stable Library Monitor", 1280, 720)
 
 last_processed_time = 0
 
-print("🚀 Stable System Online. Press 'q' to quit.")
+print(f"🚀 Stable System Online. Pushing to: {BACKEND_URL}")
+print("Press 'q' to quit.")
 
 while True:
     ret, frame = cap.read()
@@ -63,7 +65,7 @@ while True:
         display_frame = frame.copy()
 
         # Run Person Detection
-        results = model(frame, conf=CONF_THRESHOLD, classes=[0])
+        results = model(frame, conf=CONF_THRESHOLD, classes=[0], verbose=False)
         
         person_anchors = []
         for r in results:
@@ -72,9 +74,9 @@ while True:
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     
                     # CALCULATE ANCHOR (Bottom-Center of person)
-                    # This prevents detecting the seat behind the person's head
+                    # We use 10% from bottom (y2) to ensure we hit the seat, not the background
                     anchor_x = (x1 + x2) // 2
-                    anchor_y = int(y2 - (y2 - y1) * 0.3) # 15 pixels up from the feet/bottom
+                    anchor_y = int(y2 - (y2 - y1) * 0.1) 
                     person_anchors.append((anchor_x, anchor_y))
                     
                     # Visual: Person Box (Blue) and Anchor Point (Yellow)
@@ -96,15 +98,13 @@ while True:
             # If the current detection is DIFFERENT from the saved state
             if is_now_detected != (mem["state"] == "OCCUPIED"):
                 mem["counter"] += 1
-                # Only switch state if we see the change consistently
                 if mem["counter"] >= SMOOTHING_FRAMES:
                     mem["state"] = "OCCUPIED" if is_now_detected else "EMPTY"
                     mem["counter"] = 0
             else:
-                # If detection matches memory, reset the "change" counter
                 mem["counter"] = 0
 
-            # 5. Visualization
+            # Visualization
             status = mem["state"]
             color = (0, 0, 255) if status == "OCCUPIED" else (0, 255, 0)
             if status == "OCCUPIED": occupied_count += 1
@@ -124,12 +124,10 @@ while True:
             }
         }
 
-        # 2. Push to API
+        # 2. Push to API (Now pointing to /update)
         try:
-            # timeout=0.1 ensures the CV doesn't wait for the backend if it's slow
-            requests.post("https://library-seat-backend.onrender.com", json=payload, timeout=0.1)
+            requests.post(BACKEND_URL, json=payload, timeout=0.2)
         except Exception as e:
-            # We print a warning but the CV logic keeps running!
             print(f"⚠️ API Push Failed: {e}")
 
         # Dashboard Overlay

@@ -19,7 +19,7 @@ function App() {
     };
     fetchInitialData();
 
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws");
+    const ws = new WebSocket("wss://library-seat-backend.onrender.com/ws");
 
     ws.onopen = () => {
       console.log("✅ WebSocket connected");
