@@ -20,13 +20,13 @@ This project solves that problem by providing a **real-time seat availability da
 
 ## 🏗️ System Architecture
 
-CCTV / Video Feed
-↓
-Computer Vision Engine (YOLO + OpenCV)
-↓
-FastAPI Backend (REST + WebSocket)
-↓
-React Frontend Dashboard
+     CCTV / Video Feed
+     ↓
+     Computer Vision Engine (YOLO + OpenCV)
+     ↓
+     FastAPI Backend (REST + WebSocket)
+     ↓
+     React Frontend Dashboard
 
 - **Computer Vision Layer**: Detects people and determines seat occupancy
 - **Backend Layer**: Maintains real-time seat state and broadcasts updates
