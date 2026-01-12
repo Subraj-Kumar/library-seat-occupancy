@@ -9,8 +9,8 @@ from ultralytics import YOLO
 VIDEO_PATH = "data/videos/library.mp4"
 SEATS_JSON = "data/seats.json"
 CONF_THRESHOLD = 0.4
-PROCESS_EVERY_N_SECONDS = 0.5  # Slightly slower for stable cloud syncing
-SMOOTHING_FRAMES = 5           # Increased for better stability
+PROCESS_EVERY_N_SECONDS = 0.8  # Slightly slower for stable cloud syncing
+SMOOTHING_FRAMES = 2           # Increased for better stability
 # CHANGE THIS TO YOUR ACTUAL RENDER URL
 BACKEND_URL = "https://library-seat-backend.onrender.com/update" 
 # ------------------------
@@ -126,7 +126,7 @@ while True:
 
         # 2. Push to API (Now pointing to /update)
         try:
-            requests.post(BACKEND_URL, json=payload, timeout=0.2)
+            requests.post(BACKEND_URL, json=payload, timeout=1.5)
         except Exception as e:
             print(f"⚠️ API Push Failed: {e}")
 
