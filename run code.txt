@@ -1,0 +1,1 @@
+python cv/inference/realtime_seat_occupancy_smoothed.py

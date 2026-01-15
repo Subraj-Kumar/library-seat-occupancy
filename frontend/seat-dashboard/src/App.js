@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 
 // 🔧 CONFIGURATION
-// For Local: "ws://localhost:8000/ws"
-// For Cloud: "wss://library-seat-backend.onrender.com/ws"
 const WS_URL = "wss://library-seat-backend.onrender.com/ws"; 
 
 function App() {
@@ -11,11 +9,14 @@ function App() {
     total: 0,
     occupied: 0,
     empty: 0,
-    seats: {}, // Stores individual seat status
+    seats: {},
     last_updated: "Waiting...",
   });
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
   const [lastPacketTime, setLastPacketTime] = useState(Date.now());
+  
+  // ✨ NEW: State for the popup notification
+  const [showPopup, setShowPopup] = useState(true);
 
   useEffect(() => {
     let ws;
@@ -32,30 +33,45 @@ function App() {
       ws.onmessage = (event) => {
         const liveData = JSON.parse(event.data);
         setData(liveData);
-        setLastPacketTime(Date.now()); // Update heartbeat
+        setLastPacketTime(Date.now());
       };
 
       ws.onclose = () => {
         setConnectionStatus("Reconnecting...");
-        // Try to reconnect every 3 seconds
         reconnectInterval = setTimeout(connect, 3000);
       };
     };
 
     connect();
 
-    // Cleanup on unmount
     return () => {
       if (ws) ws.close();
       if (reconnectInterval) clearTimeout(reconnectInterval);
     };
   }, []);
 
-  // Check if data is "stale" (CV script hasn't sent data in > 5 seconds)
   const isStale = Date.now() - lastPacketTime > 5000 && connectionStatus === "Connected";
 
   return (
     <div className="dashboard-container">
+      {/* ✨ 1. BACKGROUND IMAGE OVERLAY */}
+      <div className="background-image"></div>
+
+      {/* ✨ 2. POPUP NOTIFICATION */}
+      {showPopup && (
+        <div className="notification-popup">
+          <div className="popup-header">
+            <span>⚠️ Computation Notice</span>
+            <button onClick={() => setShowPopup(false)}>✖</button>
+          </div>
+          <p>
+            System update received. Note: To conserve hosting resources, 
+            heavy CV computation runs only during live illustration events, 
+            not continuously 24/7.
+          </p>
+        </div>
+      )}
+
       <header className="navbar">
         <div className="logo">📚 Dr BR Ambedkar Library Live Seat Occupancy</div>
         <div className={`status-pill ${connectionStatus === "Connected" ? "online" : "offline"}`}>
@@ -90,7 +106,6 @@ function App() {
           
           <div className="seat-grid">
             {Object.keys(data.seats).length > 0 ? (
-              // Sort seat IDs numerically to keep them in order
               Object.keys(data.seats).sort((a, b) => parseInt(a) - parseInt(b)).map((seatId) => (
                 <div 
                   key={seatId} 
@@ -106,8 +121,18 @@ function App() {
         </div>
       </main>
 
+      {/* ✨ 3. IMPROVED FOOTER WITH LINKS */}
       <footer className="footer">
-        <p>Last Sync: {data.last_updated}</p>
+        <div className="footer-info">
+          <p>Last Sync: <strong>{data.last_updated}</strong></p>
+          <p className="credits">Built with ❤️ for Loop Winter Works</p>
+        </div>
+        <div className="social-links">
+          {/* Replace # with your actual profile links */}
+          <a href="https://github.com/Subraj-Kumar" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/subraj-kumar/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://www.linkedin.com/company/loop-se/posts/" target="_blank" rel="noreferrer">Loop SOE</a>
+        </div>
       </footer>
     </div>
   );
