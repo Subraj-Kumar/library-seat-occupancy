@@ -3,8 +3,8 @@
 
 :root {
   /* Modern Palette */
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
+  --primary: #000000;
+  --primary-dark: #18181f;
   --text-main: #1e293b;
   --text-muted: #64748b;
   --success: #10b981;
@@ -264,59 +264,84 @@ body {
 /* 6. FOOTER */
 .footer {
   margin-top: 40px;
-  background: #0f172a;
+  background: #0f172a; /* Deep professional slate */
   color: #f8fafc;
-  padding: 24px 24px; /* Much reduced padding */
+  padding: 24px 32px;
   border-radius: 16px 16px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
 }
 
-.footer-info p {
-  margin: 2px 0;
+.footer-main-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.footer-sub-text {
+  font-size: 0.75rem;
   color: #94a3b8;
-  font-size: 0.8rem;
+  margin: 4px 0 0 0;
 }
 
-.social-links { display: flex; gap: 12px; }
+.sync-text {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-family: monospace;
+  margin-top: 8px;
+}
+
+/* SOCIAL ICON BUTTONS */
+.social-links {
+  display: flex;
+  gap: 12px;
+}
 
 .social-links a {
-  color: #e2e8f0;
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px; 
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease;
+  overflow: hidden; /* Ensures image doesn't spill out */
+}
+
+.social-icon-img {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  min-width: 18px;
+  min-height: 18px;
+  
+  /* Forces the blue/color to strip away and turn gray */
+  filter: brightness(0) invert(0.9) !important;
+  
+  /* This prevents the "white square" look if the image fails to load */
+  background-color: transparent !important;
 }
 
 .social-links a:hover {
-  background: white;
-  color: #0f172a;
+  background: #ffffff; /* White background on hover for contrast */
+  border-color: #ffffff;
+  transform: translateY(-2px);
 }
 
-.loading-text {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 30px;
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 0.9rem;
+.social-links a:hover .social-icon-img {
+  /* 💡 Turns the icon black when hovering over the white button */
+  filter: brightness(0) invert(0) !important; 
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .navbar {
+@media (max-width: 600px) {
+  .footer {
     flex-direction: column;
-    gap: 10px;
-    top: 0;
-    border-radius: 0 0 12px 12px;
+    text-align: center;
+    padding: 30px 20px;
   }
-  .stats-grid { grid-template-columns: 1fr; }
-  .footer { flex-direction: column; text-align: center; }
-  .seat-grid { grid-template-columns: repeat(5, 1fr); }
 }

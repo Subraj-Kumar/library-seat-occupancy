@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import githubIcon from "./assets/github.svg";
 import "./App.css";
 
-// 🔧 CONFIGURATION
+// CONFIGURATION
 const WS_URL = "wss://library-seat-backend.onrender.com/ws"; 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
   const [lastPacketTime, setLastPacketTime] = useState(Date.now());
   
-  // ✨ NEW: State for the popup notification
+  // NEW: State for the popup notification
   const [showPopup, setShowPopup] = useState(true);
 
   useEffect(() => {
@@ -54,10 +55,10 @@ function App() {
 
   return (
     <div className="dashboard-container">
-      {/* ✨ 1. BACKGROUND IMAGE OVERLAY */}
+      {/* 1. BACKGROUND IMAGE OVERLAY */}
       <div className="background-image"></div>
 
-      {/* ✨ 2. POPUP NOTIFICATION */}
+      {/* 2. POPUP NOTIFICATION */}
       {showPopup && (
         <div className="notification-popup">
           <div className="popup-header">
@@ -65,7 +66,7 @@ function App() {
             <button onClick={() => setShowPopup(false)}>✖</button>
           </div>
           <p>
-            System update received. Note: To conserve hosting resources, 
+            System update received: To conserve hosting resources, 
             heavy CV computation runs only during live illustration events, 
             not continuously 24/7.
           </p>
@@ -121,17 +122,28 @@ function App() {
         </div>
       </main>
 
-      {/* ✨ 3. IMPROVED FOOTER WITH LINKS */}
+      {/* 3. IMPROVED FOOTER WITH LINKS */}
       <footer className="footer">
         <div className="footer-info">
-          <p>Last Sync: <strong>{data.last_updated}</strong></p>
-          <p className="credits">Built with ❤️ for Loop Winter Works</p>
+          <p className="footer-main-text">
+            <strong>Subraj Kumar</strong> | JNU B.Tech CSE 2027
+          </p>
+          <p className="footer-sub-text">
+            Real-time AI monitoring for Dr. B.R. Ambedkar Central Library
+          </p>
+          <p className="sync-text">
+            Last Sync: {data.last_updated}
+          </p>
         </div>
+        
         <div className="social-links">
-          {/* Replace # with your actual profile links */}
-          <a href="https://github.com/Subraj-Kumar" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://www.linkedin.com/in/subraj-kumar/" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://www.linkedin.com/company/loop-se/posts/" target="_blank" rel="noreferrer">Loop SOE</a>
+          <a href="https://github.com/Subraj-Kumar" target="_blank" rel="noreferrer" title="GitHub">
+            <img src={githubIcon} alt="GitHub" className="social-icon-img" />
+          </a>
+
+          <a href="https://www.linkedin.com/in/subraj-kumar/" target="_blank" rel="noreferrer" title="LinkedIn">
+            <img src="/linkedin.png" alt="LinkedIn" className="social-icon-img" />
+          </a>
         </div>
       </footer>
     </div>
